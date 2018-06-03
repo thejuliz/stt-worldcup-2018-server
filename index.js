@@ -15,6 +15,7 @@ app
   })
   .get('/predictions', (req, res) => {
     db.serialize(function () {
+      const sql = 'SELECT * FROM prediction'
       db.all(sql,params, (err, rows) => {
         if (err) res.status(500)
         res.status(200).send(rows)
@@ -30,8 +31,8 @@ app
 
     if (user_id && match_id) {
       db.serialize(function () {
-        const query = 'SELECT * FROM prediction WHERE user_id = "' + user_id + '" AND match_id = ' + match_id
-        db.get(query, (err, row) => {
+        const sql = 'SELECT * FROM prediction WHERE user_id = "' + user_id + '" AND match_id = ' + match_id
+        db.get(sql, (err, row) => {
           if (err) res.status(500)
           res.status(200).send(row);
         })
