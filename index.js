@@ -25,7 +25,7 @@ app
       res.type('json').status(500).send(error)
     })
   })
-  .get('/prediction/:user_id', '/prediction/:user_id/:match_id', (req, res) => {
+  .get(['/prediction/:user_id', '/prediction/:user_id/:match_id'], (req, res) => {
     const user_id = req.params.user_id
     const match_id = req.params.match_id
 
