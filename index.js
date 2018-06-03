@@ -41,7 +41,7 @@ app
   })
   .post('/predict', (req, res) => {
     console.log(req.body);
-    db.none('INSERT INTO PREDICTION(MATCH_ID, HOME_RESULT, AWAY_RESULT, USER_ID) VALUES(${match_id}, ${home_result}, ${away_result}, \'${user_id}\')', req.body).then((data) => {
+    db.none('INSERT INTO PREDICTION(MATCH_ID, HOME_RESULT, AWAY_RESULT, USER_ID) VALUES($/match_id/, $/home_result/, $/away_result/, ${user_id})', req.body).then((data) => {
       res.type('json').status(200).send({
         message: 'Prediction completed'
       })
