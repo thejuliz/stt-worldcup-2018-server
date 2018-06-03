@@ -14,11 +14,15 @@ app
     res.status(200).send('Hello world')
   })
   .get('/predictions', (req, res) => {
-    res.status(200).send({
-      predictions: [
-        1, 2, 3
-      ]
+    db.serialize(function () {
+      db.all(sql,params, (err, rows) => {
+        if (err) res.status(500)
+        res.status(200).send(rows)
+      })
     })
+
+    db.close()
+    
   })
   .get('/my-prediction/:user_id/:match_id', (req, res) => {
     const user_id = req.params.user_id
@@ -30,10 +34,10 @@ app
         db.get(query, (err, row) => {
           if (err) res.status(500)
           res.status(200).send(row);
-        });
-      });
+        })
+      })
 
-      db.close();
+      db.close()
     }
   })
   .listen(PORT, () => console.log(`Listening on ${ PORT }`))
