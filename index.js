@@ -22,7 +22,7 @@ app
       res.type('json').status(200).send(data)
     })
     .catch((error) => {
-      res.type('json').status(500).send(error);
+      res.type('json').status(500).send(error)
     })
   })
   .get('/prediction/:user_id/:match_id', (req, res) => {
@@ -35,19 +35,27 @@ app
         res.type('json').status(200).send(data)
       })
       .catch((error) => {
-        res.type('json').status(500).send(error);
+        res.type('json').status(500).send(error)
       })
     }
   })
   .post('/predict', (req, res) => {
-    console.log(req.body);
     db.none('INSERT INTO PREDICTION(MATCH_ID, HOME_RESULT, AWAY_RESULT, USER_ID) VALUES($/match_id/, $/home_result/, $/away_result/, ${user_id})', req.body).then((data) => {
       res.type('json').status(200).send({
         message: 'Prediction completed'
       })
     })
     .catch((error) => {
-      res.type('json').status(500).send(error);
+      res.type('json').status(500).send(error)
+    })
+  })
+  .post('/users', (req, res) => {
+    const sql = 'SELECT * FROM EMPLOYEE'
+    db.any(sql).then((data) => {
+      res.type('json').status(200).send(data)
+    })
+    .catch((error) => {
+      res.type('json').status(500).send(error)
     })
   })
   .listen(PORT, () => console.log(`Listening on ${ PORT }`))
