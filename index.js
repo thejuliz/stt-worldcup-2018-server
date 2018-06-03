@@ -49,7 +49,7 @@ app
       res.type('json').status(500).send(error)
     })
   })
-  .post('/users', (req, res) => {
+  .get('/users', (req, res) => {
     const sql = 'SELECT * FROM EMPLOYEE'
     db.any(sql).then((data) => {
       res.type('json').status(200).send(data)
