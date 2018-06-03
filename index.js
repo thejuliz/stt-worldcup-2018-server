@@ -58,4 +58,14 @@ app
       res.type('json').status(500).send(error)
     })
   })
+  .post('/add-user', (req, res) => {
+    db.none('INSERT INTO EMPLOYEE(ID, NAME, POSITION) VALUES(${id}, ${name}, ${position}) ON CONFLICT(NAME, POSITION) DO UPDATE SET NAME=${name}, POSITION=${position}', req.body).then((data) => {
+      res.type('json').status(200).send({
+        message: 'User added'
+      })
+    })
+    .catch((error) => {
+      res.type('json').status(500).send(error)
+    })
+  })
   .listen(PORT, () => console.log(`Listening on ${ PORT }`))
