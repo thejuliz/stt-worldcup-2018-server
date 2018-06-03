@@ -25,12 +25,13 @@ app
       res.type('json').status(500).send(error)
     })
   })
-  .get('/prediction/:user_id/:match_id', (req, res) => {
+  .get('/prediction/:user_id', '/prediction/:user_id/:match_id', (req, res) => {
     const user_id = req.params.user_id
     const match_id = req.params.match_id
 
-    if (user_id && match_id) {
-      const sql = 'SELECT * FROM PREDICTION WHERE user_id = \'' + user_id + '\' AND match_id = ' + match_id
+    if (user_id) {
+      let sql = 'SELECT * FROM PREDICTION WHERE user_id = \'' + user_id + '\''
+      if (match_id) sql = sql + ' AND match_id = ' + match_id
       db.any(sql).then((data) => {
         res.type('json').status(200).send(data)
       })
