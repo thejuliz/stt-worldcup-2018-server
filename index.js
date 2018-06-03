@@ -2,6 +2,7 @@ const express = require('express')
 const path = require('path')
 const PORT = process.env.PORT || 5000
 const app = express()
+const bodyParser = require('body-parser');
 // const sqlite3 = require('sqlite3').verbose()
 // const db = new sqlite3.Database('worldcup.db')
 const pgp = require('pg-promise')(/*options*/)
@@ -9,6 +10,8 @@ const db = pgp('postgres://inshmbgqlpkolv:630b068260e8cbf573bec00670e0c4344933b5
 
 app
   .use(express.static(path.join(__dirname, 'public')))
+  .use(bodyParser.urlencoded({ extended: true }))
+  .use(bodyParser.json())
   //.get('/', (req, res) => res.render('pages/index'))
   .get('/', (req, res) => {
     res.status(200).send('Hello world')
@@ -19,7 +22,7 @@ app
       res.type('json').status(200).send(data)
     })
     .catch((error) => {
-      res.status(500).send(error);
+      res.type('json').status(500).send(error);
     })
   })
   .get('/prediction/:user_id/:match_id', (req, res) => {
@@ -32,8 +35,18 @@ app
         res.type('json').status(200).send(data)
       })
       .catch((error) => {
-        res.status(500).send(error);
+        res.type('json').status(500).send(error);
       })
     }
+  })
+  .post('/predict', (req, res) => {
+    db.none('INSERT INTO PREDICTION(MATCH_ID, HOME_RESULT, AWAY_RESULT, USER_ID) VALUES(${match_id}, ${home_result}, ${away_result}, \'${user_id}\')', req.body).then((data) => {
+      res.type('json').status(200).send({
+        message: 'Prediction completed'
+      })
+    })
+    .catch((error) => {
+      res.type('json').status(500).send(error);
+    })
   })
   .listen(PORT, () => console.log(`Listening on ${ PORT }`))
