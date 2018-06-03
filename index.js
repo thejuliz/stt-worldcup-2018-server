@@ -27,14 +27,13 @@ app
     const match_id = req.params.match_id
 
     if (user_id && match_id) {
-      db.serialize(function () {
-        const sql = 'SELECT * FROM prediction WHERE user_id = "' + user_id + '" AND match_id = ' + match_id
-        db.get(sql, (err, row) => {
-          if (err) res.status(500)
-          res.type('json').status(200).send(row);
-        })
+      const sql = 'SELECT * FROM prediction WHERE user_id = "' + user_id + '" AND match_id = ' + match_id
+      db.any(sql).then((data) => {
+        res.type('json').status(200).send(data)
       })
-      db.close()
+      .catch((error) => {
+        res.status(500).send(error);
+      })
     }
   })
   .listen(PORT, () => console.log(`Listening on ${ PORT }`))
