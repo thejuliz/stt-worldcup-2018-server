@@ -2,30 +2,27 @@ const express = require('express')
 const path = require('path')
 const PORT = process.env.PORT || 5000
 const app = express()
-const sqlite3 = require('sqlite3').verbose()
-const db = new sqlite3.Database('worldcup.db')
+// const sqlite3 = require('sqlite3').verbose()
+// const db = new sqlite3.Database('worldcup.db')
+const pgp = require('pg-promise')(/*options*/)
+const db = pgp('postgres://inshmbgqlpkolv:630b068260e8cbf573bec00670e0c4344933b5c0bafcfef34cbde9f24a43ae23@ec2-54-83-1-94.compute-1.amazonaws.com:5432/derjie4l4ghpm')
 
 app
   .use(express.static(path.join(__dirname, 'public')))
-  .set('views', path.join(__dirname, 'views'))
-  .set('view engine', 'ejs')
   //.get('/', (req, res) => res.render('pages/index'))
   .get('/', (req, res) => {
     res.status(200).send('Hello world')
   })
   .get('/predictions', (req, res) => {
-    db.serialize(function () {
-      const sql = 'SELECT * FROM prediction'
-      db.all(sql,params, (err, rows) => {
-        if (err) res.status(500)
-        res.status(200).send(rows)
-      })
+    const sql = 'SELECT * FROM prediction'
+    db.any(sql).then((data) => {
+      res.type('json').status(200).send(data)
     })
-
-    db.close()
-    
+    .catch((error) => {
+      res.status(500).send(error);
+    })
   })
-  .get('/my-prediction/:user_id/:match_id', (req, res) => {
+  .get('/prediction/:user_id/:match_id', (req, res) => {
     const user_id = req.params.user_id
     const match_id = req.params.match_id
 
@@ -34,10 +31,9 @@ app
         const sql = 'SELECT * FROM prediction WHERE user_id = "' + user_id + '" AND match_id = ' + match_id
         db.get(sql, (err, row) => {
           if (err) res.status(500)
-          res.status(200).send(row);
+          res.type('json').status(200).send(row);
         })
       })
-
       db.close()
     }
   })
