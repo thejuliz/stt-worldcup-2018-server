@@ -14,7 +14,7 @@ app
     res.status(200).send('Hello world')
   })
   .get('/predictions', (req, res) => {
-    const sql = 'SELECT * FROM prediction'
+    const sql = 'SELECT * FROM PREDICTION'
     db.any(sql).then((data) => {
       res.type('json').status(200).send(data)
     })
@@ -27,7 +27,7 @@ app
     const match_id = req.params.match_id
 
     if (user_id && match_id) {
-      const sql = 'SELECT * FROM prediction WHERE user_id = "' + user_id + '" AND match_id = ' + match_id
+      const sql = 'SELECT * FROM PREDICTION WHERE user_id = \'' + user_id + '\' AND match_id = ' + match_id
       db.any(sql).then((data) => {
         res.type('json').status(200).send(data)
       })
