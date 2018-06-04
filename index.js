@@ -6,7 +6,7 @@ const bodyParser = require('body-parser');
 // const sqlite3 = require('sqlite3').verbose()
 // const db = new sqlite3.Database('worldcup.db')
 const pgp = require('pg-promise')(/*options*/)
-const db = pgp('postgres://gxqvybbufxriks:677d29ca2039c13cb3b971ee3785d85b4a7193eb62bf7a503c53b3f6badc127b@ec2-107-20-249-68.compute-1.amazonaws.com:5432/gxqvybbufxriks')
+const db = pgp('postgres://gxqvybbufxriks:677d29ca2039c13cb3b971ee3785d85b4a7193eb62bf7a503c53b3f6badc127b@ec2-107-20-249-68.compute-1.amazonaws.com:5432/d3fkcigkaqpmbp')
 
 app
   .use(express.static(path.join(__dirname, 'public')))
