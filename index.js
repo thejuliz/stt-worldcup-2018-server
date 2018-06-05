@@ -55,9 +55,10 @@ app
     })
   })
   .get('/users', (req, res) => {
-    MongoClient.connect(db_url, function (err, db) {
+    MongoClient.connect(db_url, function (err, database) {
       if (err) res.type('json').status(500).send(err)
-    
+      
+      const db = database.db('stt-worldcup-2018')
       db.collection('users').find().toArray(function (err, result) {
         if (err) res.type('json').status(500).send(err)
     
