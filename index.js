@@ -11,6 +11,7 @@ const bodyParser = require('body-parser');
 const MongoClient = require('mongodb').MongoClient
 const db_url = 'mongodb://stt:Settrade99@ds247670.mlab.com:47670/stt-worldcup-2018'
 
+
 app
   .use(express.static(path.join(__dirname, 'public')))
   .use(bodyParser.urlencoded({ extended: true }))
