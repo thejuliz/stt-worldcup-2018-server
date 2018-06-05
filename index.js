@@ -16,17 +16,19 @@ app
   .use(express.static(path.join(__dirname, 'public')))
   .use(bodyParser.urlencoded({ extended: true }))
   .use(bodyParser.json())
-  //.get('/', (req, res) => res.render('pages/index'))
   .get('/', (req, res) => {
     res.status(200).send('Hello world')
   })
   .get('/predictions', (req, res) => {
-    const sql = 'SELECT * FROM PREDICTION'
-    db.any(sql).then((data) => {
-      res.type('json').status(200).send(data)
-    })
-    .catch((error) => {
-      res.type('json').status(500).send(error)
+    MongoClient.connect(db_url, function (err, database) {
+      if (err) res.type('json').status(500).send(err)
+      
+      const db = database.db('stt-worldcup-2018')
+      db.collection('predictions').find().toArray(function (err, result) {
+        if (err) res.type('json').status(500).send(err)
+    
+        res.type('json').status(200).send(result)
+      })
     })
   })
   .get(['/prediction/:user_id', '/prediction/:user_id/:match_id'], (req, res) => {
@@ -34,24 +36,36 @@ app
     const match_id = req.params.match_id
 
     if (user_id) {
-      let sql = 'SELECT * FROM PREDICTION WHERE user_id = \'' + user_id + '\''
-      if (match_id) sql = sql + ' AND match_id = ' + match_id
-      db.any(sql).then((data) => {
-        res.type('json').status(200).send(data)
-      })
-      .catch((error) => {
-        res.type('json').status(500).send(error)
+      MongoClient.connect(db_url, function (err, database) {
+        if (err) res.type('json').status(500).send(err)
+        
+        const query = { user_id }
+        if (match_id) query.match_id = parseInt(match_id)
+        const db = database.db('stt-worldcup-2018')
+        db.collection('predictions').find(query).toArray(function (err, result) {
+          if (err) res.type('json').status(500).send(err)
+      
+          res.type('json').status(200).send(result)
+        })
       })
     }
   })
   .post('/predict', (req, res) => {
-    db.none('INSERT INTO PREDICTION(MATCH_ID, HOME_RESULT, AWAY_RESULT, USER_ID) VALUES($/match_id/, $/home_result/, $/away_result/, ${user_id})', req.body).then((data) => {
-      res.type('json').status(200).send({
-        message: 'Prediction completed'
+    MongoClient.connect(db_url, function (err, database) {
+      if (err) res.type('json').status(500).send(err)
+      
+      const db = database.db('stt-worldcup-2018')
+      const {match_id, home_result, away_result, user_id} = req.body;
+      db.collection('predictions').insertOne(
+        {
+          match_id: parseInt(match_id),
+          home_result: parseInt(home_result),
+          away_result: parseInt(away_result),
+          user_id
+        }
+      ).then(() => {
+        res.type('json').status(200).send({message: 'Predicted'})
       })
-    })
-    .catch((error) => {
-      res.type('json').status(500).send(error)
     })
   })
   .get('/users', (req, res) => {
@@ -65,23 +79,23 @@ app
         res.type('json').status(200).send(result)
       })
     })
-
-    // const sql = 'SELECT * FROM EMPLOYEE'
-    // db.any(sql).then((data) => {
-    //   res.type('json').status(200).send(data)
-    // })
-    // .catch((error) => {
-    //   res.type('json').status(500).send(error)
-    // })
   })
   .post('/add-user', (req, res) => {
-    db.none('INSERT INTO EMPLOYEE(ID, NAME, POSITION) VALUES(${id}, ${name}, ${position}) ON CONFLICT(ID) DO UPDATE SET NAME=${name}, POSITION=${position}', req.body).then((data) => {
-      res.type('json').status(200).send({
-        message: 'User added'
+    MongoClient.connect(db_url, function (err, database) {
+      if (err) res.type('json').status(500).send(err)
+      
+      const db = database.db('stt-worldcup-2018')
+      db.collection('users').replaceOne(
+        {
+          id: req.body.id
+        },
+        req.body,
+        {
+          upsert: true
+        }
+      ).then(() => {
+        res.type('json').status(200).send({message: 'User added'})
       })
-    })
-    .catch((error) => {
-      res.type('json').status(500).send(error)
     })
   })
   .listen(PORT, () => console.log(`Listening on ${ PORT }`))
