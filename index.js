@@ -83,7 +83,7 @@ app
           upsert: true
         }
       ).then(() => {
-        res.type('json').status(200).send({message: 'Predicted'})
+        res.type('json').status(200).send({match_id: match_id, prediction: prediction})
       })
     })
   })
