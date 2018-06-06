@@ -55,13 +55,18 @@ app
       if (err) res.type('json').status(500).send(err)
       
       const db = database.db('stt-worldcup-2018')
-      const {match_id, home_result, away_result, user_id} = req.body;
-      db.collection('predictions').insertOne(
+      const {match_id, prediction, user_id} = req.body;
+      db.collection('predictions').replaceOne(
+        {
+          match_id: parseInt(match_id)
+        },
         {
           match_id: parseInt(match_id),
-          home_result: parseInt(home_result),
-          away_result: parseInt(away_result),
+          prediction,
           user_id
+        },
+        {
+          upsert: true
         }
       ).then(() => {
         res.type('json').status(200).send({message: 'Predicted'})
