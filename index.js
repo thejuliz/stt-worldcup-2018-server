@@ -11,9 +11,23 @@ const bodyParser = require('body-parser');
 const MongoClient = require('mongodb').MongoClient
 const db_url = 'mongodb://stt:Settrade99@ds247670.mlab.com:47670/stt-worldcup-2018'
 
+const allowCrossDomain = function(req, res, next) {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
+
+  // intercept OPTIONS method
+  if ('OPTIONS' == req.method) {
+    res.send(200);
+  }
+  else {
+    next();
+  }
+};
 
 app
   .use(express.static(path.join(__dirname, 'public')))
+  .use(allowCrossDomain)
   .use(bodyParser.urlencoded({ extended: true }))
   .use(bodyParser.json())
   .get('/', (req, res) => {
