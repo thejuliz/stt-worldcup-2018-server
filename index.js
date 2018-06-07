@@ -72,7 +72,8 @@ app
       const {match_id, prediction, user_id} = req.body;
       db.collection('predictions').replaceOne(
         {
-          match_id: parseInt(match_id)
+          match_id: parseInt(match_id),
+          user_id: user_id
         },
         {
           match_id: parseInt(match_id),
