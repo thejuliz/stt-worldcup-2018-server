@@ -9,7 +9,9 @@ const bodyParser = require('body-parser');
 // const db = pgp('postgres://gxqvybbufxriks:677d29ca2039c13cb3b971ee3785d85b4a7193eb62bf7a503c53b3f6badc127b@ec2-107-20-249-68.compute-1.amazonaws.com:5432/d3fkcigkaqpmbp')
 
 const MongoClient = require('mongodb').MongoClient
-const db_url = 'mongodb://stt:Settrade99@ds247670.mlab.com:47670/stt-worldcup-2018'
+
+//const db_url = 'mongodb://stt:Settrade99@ds247670.mlab.com:47670/stt-worldcup-2018'
+const db_url = 'mongodb+srv://stt:Settrade99@cluster0.k2bgz.mongodb.net/euro-2021?retryWrites=true&w=majority';
 
 const allowCrossDomain = function(req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
@@ -37,7 +39,7 @@ app
     MongoClient.connect(db_url, function (err, database) {
       if (err) res.type('json').status(500).send(err)
       
-      const db = database.db('stt-worldcup-2018')
+      const db = database.db('euro-2021')
       db.collection('predictions').find().toArray(function (err, result) {
         if (err) res.type('json').status(500).send(err)
     
@@ -55,7 +57,7 @@ app
         
         const query = { user_id }
         if (match_id) query.match_id = parseInt(match_id)
-        const db = database.db('stt-worldcup-2018')
+        const db = database.db('euro-2021')
         db.collection('predictions').find(query).toArray(function (err, result) {
           if (err) res.type('json').status(500).send(err)
       
@@ -68,7 +70,7 @@ app
     MongoClient.connect(db_url, function (err, database) {
       if (err) res.type('json').status(500).send(err)
       
-      const db = database.db('stt-worldcup-2018')
+      const db = database.db('euro-2021')
       const {match_id, prediction, user_id} = req.body;
       db.collection('predictions').replaceOne(
         {
@@ -92,7 +94,7 @@ app
     MongoClient.connect(db_url, function (err, database) {
       if (err) res.type('json').status(500).send(err)
       
-      const db = database.db('stt-worldcup-2018')
+      const db = database.db('euro-2021')
       db.collection('users').find().toArray(function (err, result) {
         if (err) res.type('json').status(500).send(err)
     
@@ -104,7 +106,7 @@ app
     MongoClient.connect(db_url, function (err, database) {
       if (err) res.type('json').status(500).send(err)
       
-      const db = database.db('stt-worldcup-2018')
+      const db = database.db('euro-2021')
       db.collection('users').replaceOne(
         {
           id: req.body.id
